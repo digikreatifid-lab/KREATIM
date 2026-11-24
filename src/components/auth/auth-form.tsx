@@ -41,7 +41,7 @@ export function AuthForm({ mode, googleEnabled }: { mode: "login" | "register"; 
         setError("Email atau password salah.");
         return;
       }
-      router.push("/dashboard");
+      router.push(isRegister ? "/dashboard/onboarding" : "/dashboard");
       router.refresh();
     } finally {
       setPending(false);

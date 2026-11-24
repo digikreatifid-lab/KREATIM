@@ -1,4 +1,7 @@
 import type { Metadata } from "next";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import { getBrandUsage } from "@/services/brandService";
 import { auth } from "@/auth";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -10,7 +13,7 @@ export const metadata: Metadata = { title: "Overview" };
 export default async function DashboardPage() {
   const session = await auth();
   const userId = session!.user.id;
-  const balance = await getBalance(userId);
+  const [balance, brands] = await Promise.all([getBalance(userId), getBrandUsage(userId)]);
 
   return (
     <div className="mx-auto grid max-w-5xl gap-6">
@@ -18,6 +21,17 @@ export default async function DashboardPage() {
         <h1 className="text-2xl font-semibold tracking-tight">Halo{session?.user?.name ? `, ${session.user.name}` : ""} 👋</h1>
         <p className="text-muted-foreground">Ini ringkasan akun Kreatim kamu.</p>
       </div>
+      {brands.used === 0 && (
+        <Card className="border-brand/30 bg-accent/40">
+          <CardHeader>
+            <CardTitle>Langkah pertama: setup Brand Brain</CardTitle>
+            <CardDescription>Isi profil, warna, logo, dan produk sekali saja. Semua agent akan mengikuti gaya brand kamu.</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Button asChild variant="brand"><Link href="/dashboard/onboarding">Setup sekarang (3 menit)</Link></Button>
+          </CardContent>
+        </Card>
+      )}
       <div className="grid gap-4 sm:grid-cols-3">
         <Card>
           <CardHeader>
