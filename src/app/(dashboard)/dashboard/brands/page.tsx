@@ -19,7 +19,7 @@ export default async function BrandsPage() {
     <div className="mx-auto grid max-w-5xl gap-6">
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-semibold tracking-tight">Brand Brain</h1>
+          <h1 className="text-3xl font-extrabold tracking-tight sm:text-4xl">Brand Brain</h1>
           <p className="text-muted-foreground">
             Memori brand yang dipakai semua agent. {usage.used} dari {usage.limit} brand terpakai.
           </p>

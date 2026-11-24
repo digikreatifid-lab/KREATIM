@@ -19,7 +19,7 @@ export default async function CopywriterPage() {
   return (
     <div className="mx-auto grid max-w-6xl gap-6">
       <div>
-        <h1 className="text-2xl font-semibold tracking-tight">Agent Penulis</h1>
+        <h1 className="text-3xl font-extrabold tracking-tight sm:text-4xl">Agent Penulis</h1>
         <p className="text-muted-foreground">Caption, ad copy, skrip video, dan deskripsi marketplace sesuai gaya brand kamu.</p>
       </div>
       {brands.length === 0 ? <NoBrandNotice /> : <CopywriterStudio brands={toBrandOptions(brands)} />}

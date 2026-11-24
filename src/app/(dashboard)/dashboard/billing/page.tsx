@@ -45,17 +45,17 @@ export default async function BillingPage({ searchParams }: { searchParams: Prom
     <div className="mx-auto grid max-w-6xl gap-8">
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-semibold tracking-tight">Paket & Billing</h1>
+          <h1 className="text-3xl font-extrabold tracking-tight sm:text-4xl">Paket & Billing</h1>
           <p className="text-muted-foreground">Bayar via QRIS, Virtual Account, atau e-wallet. Kredit masuk otomatis.</p>
         </div>
-        <div className="rounded-lg border px-4 py-2 text-sm">
+        <div className="rounded-full border bg-white px-4 py-2 text-sm">
           Paket <Badge variant="brand">{balance.planTier.replace("_", " ")}</Badge> · <b>{balance.total}</b> kredit
           {balance.subExpiresAt && <span className="text-muted-foreground"> · reset {balance.subExpiresAt.toLocaleDateString("id-ID")}</span>}
         </div>
       </div>
 
       {orderStatus && (
-        <div role="status" className={cn("rounded-lg border p-4 text-sm",
+        <div role="status" className={cn("rounded-3xl border p-4 text-sm",
           orderStatus.tone === "ok" && "border-brand/30 bg-accent/60 text-accent-foreground",
           orderStatus.tone === "bad" && "border-destructive/30 bg-destructive/5 text-destructive")}>
           {orderStatus.text}

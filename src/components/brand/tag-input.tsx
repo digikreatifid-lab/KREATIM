@@ -31,7 +31,7 @@ export function TagInput({ id, value, onChange, placeholder }: { id: string; val
       {value.length > 0 && (
         <div className="flex flex-wrap gap-1.5">
           {value.map((w) => (
-            <span key={w} className="inline-flex items-center gap-1 rounded-md bg-secondary px-2 py-0.5 text-xs">
+            <span key={w} className="inline-flex items-center gap-1 rounded-full bg-lilac/50 px-2.5 py-0.5 text-xs">
               {w}
               <button type="button" aria-label={`Hapus ${w}`} onClick={() => onChange(value.filter((x) => x !== w))}>
                 <X className="size-3" />

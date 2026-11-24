@@ -33,7 +33,7 @@ export default async function OnboardingPage() {
   return (
     <div className="mx-auto grid max-w-5xl gap-6">
       <div>
-        <h1 className="text-2xl font-semibold tracking-tight">Setup Brand Brain</h1>
+        <h1 className="text-3xl font-extrabold tracking-tight sm:text-4xl">Setup Brand Brain</h1>
         <p className="text-muted-foreground">3 langkah singkat, sekitar 3 menit. Bisa diubah kapan saja.</p>
       </div>
       <OnboardingWizard />

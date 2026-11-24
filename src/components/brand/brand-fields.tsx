@@ -48,7 +48,7 @@ export function BrandProfileFields({ value, onChange }: Props) {
               onClick={() => onChange({ toneOfVoice: t.value })}
               aria-pressed={value.toneOfVoice === t.value}
               className={cn(
-                "rounded-full border px-3 py-1.5 text-sm transition-colors",
+                "rounded-full border border-input bg-white px-3 py-1.5 text-sm transition-colors",
                 value.toneOfVoice === t.value ? "border-brand bg-accent text-accent-foreground" : "hover:bg-secondary",
               )}
             >
@@ -92,8 +92,8 @@ export function BrandVisualFields({ value, onChange }: Props) {
               onClick={() => onChange({ fontPreset: f.value })}
               aria-pressed={value.fontPreset === f.value}
               className={cn(
-                "rounded-lg border p-3 text-left transition-colors",
-                value.fontPreset === f.value ? "border-brand bg-accent/50" : "hover:bg-secondary",
+                "rounded-2xl border border-input bg-white p-3 text-left transition-colors",
+                value.fontPreset === f.value ? "border-ink bg-lilac/50" : "hover:bg-secondary",
               )}
             >
               <span className="block text-sm font-medium">{f.label}</span>
@@ -109,7 +109,7 @@ export function BrandVisualFields({ value, onChange }: Props) {
 function ProductRow({ product, onChange, onRemove }: { product: Product; onChange: (p: Product) => void; onRemove: () => void }) {
   const benefits = [...product.benefits, "", "", ""].slice(0, 3);
   return (
-    <div className="grid gap-4 rounded-lg border p-4">
+    <div className="grid gap-4 rounded-3xl border bg-mist/60 p-4">
       <div className="grid gap-4 sm:grid-cols-[1fr_160px]">
         <div className="grid gap-2">
           <Label htmlFor={`pn-${product.id}`}>Nama produk</Label>
@@ -157,7 +157,7 @@ export function ProductCatalogFields({ value, onChange }: Props) {
   return (
     <div className="grid gap-4">
       {value.products.length === 0 && (
-        <p className="rounded-lg border border-dashed p-6 text-center text-sm text-muted-foreground">
+        <p className="rounded-3xl border border-dashed border-input p-6 text-center text-sm text-muted-foreground">
           Belum ada produk. Tambahkan minimal 1 produk agar agent bisa menulis dan mendesain promo yang spesifik.
         </p>
       )}
