@@ -1,10 +1,16 @@
-import { randomUUID } from "node:crypto";
+import { createHmac, randomUUID, timingSafeEqual } from "node:crypto";
+import { mkdir, writeFile } from "node:fs/promises";
+import path from "node:path";
 import { PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 
 /**
  * Cloudflare R2 helper (S3-compatible). PRD §4: logos, product photos and
  * rendered designs live here; serving them has zero egress cost.
+ *
+ * Development fallback: when the R2_* variables are empty and NODE_ENV is not
+ * "production", files are written to `.dev-uploads/` and served from
+ * `/dev-uploads/*`, so the whole app can be tried locally without an R2 account.
  */
 
 export const MAX_UPLOAD_BYTES = 5 * 1024 * 1024;
@@ -37,6 +43,65 @@ function r2Env() {
   return { accountId, accessKeyId, secretAccessKey, bucket, publicBaseUrl: publicBaseUrl.replace(/\/+$/, "") };
 }
 
+export type StorageMode = "r2" | "local";
+
+function hasR2Env() {
+  return Boolean(
+    process.env.R2_ACCOUNT_ID &&
+      process.env.R2_ACCESS_KEY_ID &&
+      process.env.R2_SECRET_ACCESS_KEY &&
+      process.env.R2_BUCKET_NAME &&
+      process.env.R2_PUBLIC_BASE_URL,
+  );
+}
+
+export function storageMode(): StorageMode {
+  if (hasR2Env()) return "r2";
+  if (process.env.NODE_ENV !== "production") return "local";
+  throw new R2NotConfiguredError();
+}
+
+export const LOCAL_UPLOAD_DIR = path.join(process.cwd(), ".dev-uploads");
+
+function localBaseUrl() {
+  return `${(process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000").replace(/\/+$/, "")}/dev-uploads`;
+}
+
+/** Public base URL of stored files, or undefined when storage is not configured. */
+export function storagePublicBaseUrl(): string | undefined {
+  if (hasR2Env()) return process.env.R2_PUBLIC_BASE_URL!.replace(/\/+$/, "");
+  if (process.env.NODE_ENV !== "production") return localBaseUrl();
+  return undefined;
+}
+
+function localUploadToken(key: string, contentType: string, size: number, expires: number) {
+  const secret = process.env.AUTH_SECRET ?? "dev-secret";
+  return createHmac("sha256", secret).update(`${key}|${contentType}|${size}|${expires}`).digest("hex");
+}
+
+export function verifyLocalUploadToken(params: { key: string; contentType: string; size: number; expires: number; token: string }) {
+  if (storageMode() !== "local" || Date.now() > params.expires) return false;
+  const expected = Buffer.from(localUploadToken(params.key, params.contentType, params.size, params.expires));
+  const given = Buffer.from(params.token);
+  return expected.length === given.length && timingSafeEqual(expected, given);
+}
+
+export function isSafeObjectKey(key: string) {
+  return /^users\/[a-z0-9]+\/[a-z]+\/[a-z0-9-]+\.(png|jpg|webp)$/i.test(key);
+}
+
+async function writeLocal(key: string, body: Buffer | Uint8Array) {
+  if (!isSafeObjectKey(key)) throw new Error("Object key tidak valid.");
+  const file = path.join(LOCAL_UPLOAD_DIR, key);
+  await mkdir(path.dirname(file), { recursive: true });
+  await writeFile(file, body);
+}
+
+export async function writeLocalUpload(key: string, body: Buffer) {
+  await writeLocal(key, body);
+  return `${localBaseUrl()}/${key}`;
+}
+
 let client: S3Client | null = null;
 function r2Client() {
   const env = r2Env();
@@ -59,7 +124,7 @@ export function buildObjectKey(userId: string, folder: string, contentType: Allo
 }
 
 export function publicUrlForKey(key: string) {
-  return `${r2Env().publicBaseUrl}/${key}`;
+  return `${storagePublicBaseUrl()}/${key}`;
 }
 
 /**
@@ -73,8 +138,14 @@ export async function createPresignedUpload(params: {
   size: number;
 }) {
   if (params.size <= 0 || params.size > MAX_UPLOAD_BYTES) throw new RangeError("Ukuran file maksimal 5 MB.");
-  const { client, env } = r2Client();
   const key = buildObjectKey(params.userId, params.kind === "logo" ? "logos" : "products", params.contentType);
+  if (storageMode() === "local") {
+    const expires = Date.now() + 300_000;
+    const token = localUploadToken(key, params.contentType, params.size, expires);
+    const qs = new URLSearchParams({ key, contentType: params.contentType, size: String(params.size), expires: String(expires), token });
+    return { key, uploadUrl: `/api/upload/local?${qs}`, publicUrl: `${localBaseUrl()}/${key}` };
+  }
+  const { client, env } = r2Client();
   const uploadUrl = await getSignedUrl(
     client,
     new PutObjectCommand({
@@ -90,6 +161,10 @@ export async function createPresignedUpload(params: {
 
 /** Server-side upload (AI backgrounds and rendered designs). */
 export async function putObject(key: string, body: Buffer | Uint8Array, contentType: string) {
+  if (storageMode() === "local") {
+    await writeLocal(key, body);
+    return `${localBaseUrl()}/${key}`;
+  }
   const { client, env } = r2Client();
   await client.send(
     new PutObjectCommand({
@@ -108,7 +183,7 @@ export async function putObject(key: string, body: Buffer | Uint8Array, contentT
  * that reaches Satori or is stored on a brand must pass this check (anti-SSRF).
  * When `userId` is given, the object must also live in that user's folder.
  */
-export function isKreatimR2Url(url: string, userId?: string, publicBaseUrl = process.env.R2_PUBLIC_BASE_URL): boolean {
+export function isKreatimR2Url(url: string, userId?: string, publicBaseUrl = storagePublicBaseUrl()): boolean {
   if (!publicBaseUrl) return false;
   let target: URL;
   let base: URL;
@@ -118,7 +193,10 @@ export function isKreatimR2Url(url: string, userId?: string, publicBaseUrl = pro
   } catch {
     return false;
   }
-  if (target.protocol !== "https:" || target.host !== base.host) return false;
+  // https only, except the local development store (which is never used in production).
+  const allowHttp = base.protocol === "http:" && process.env.NODE_ENV !== "production";
+  if (target.protocol !== base.protocol || (target.protocol !== "https:" && !allowHttp)) return false;
+  if (target.host !== base.host) return false;
   if (target.username || target.password || target.search || target.hash) return false;
   const basePath = base.pathname.replace(/\/+$/, "");
   if (!target.pathname.startsWith(`${basePath}/users/`)) return false;

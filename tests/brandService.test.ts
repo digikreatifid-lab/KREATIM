@@ -13,8 +13,10 @@ import {
 import { buildBrandContextPrompt, getBrandContext } from "@/services/brandContextService";
 import { createUser, resetDb, testPrisma } from "./helpers";
 
-const R2 = "https://cdn.kreatim.test";
-process.env.R2_PUBLIC_BASE_URL = R2;
+import { storagePublicBaseUrl } from "@/lib/r2";
+
+// Tests run without R2 credentials, so the local development store is the "Kreatim storage".
+const R2 = storagePublicBaseUrl()!;
 
 function brandInput(overrides: Record<string, unknown> = {}) {
   return brandInputSchema.parse({
