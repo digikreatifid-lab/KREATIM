@@ -57,7 +57,7 @@ export function BrandProfileFields({ value, onChange }: Props) {
           ))}
         </div>
       </div>
-      <div className="grid gap-5 sm:grid-cols-2">
+      <div className="grid items-start gap-5 sm:grid-cols-2">
         <div className="grid gap-2">
           <Label htmlFor="must">Kata kunci wajib</Label>
           <TagInput id="must" value={value.mustUseKeywords} onChange={(v) => onChange({ mustUseKeywords: v })} placeholder="Ketik lalu Enter" />
