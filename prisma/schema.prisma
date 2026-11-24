@@ -1,0 +1,123 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum PlanTier {
+  FREE_TRIAL
+  STARTER
+  GROWTH
+  PRO
+}
+
+enum LedgerType {
+  SUBSCRIPTION_GRANT
+  TOPUP_PURCHASE
+  USAGE_COPYWRITER
+  USAGE_DESIGN_HYBRID
+  REFUND_FAILED_JOB
+  MONTHLY_EXPIRATION
+}
+
+enum JobStatus {
+  PENDING
+  PROCESSING
+  COMPLETED
+  FAILED
+}
+
+model User {
+  id            String               @id @default(cuid())
+  email         String               @unique
+  name          String?
+  passwordHash  String?
+  planTier      PlanTier             @default(FREE_TRIAL)
+  subCredits    Int                  @default(15)
+  topupCredits  Int                  @default(0)
+  subExpiresAt  DateTime?
+  createdAt     DateTime             @default(now())
+  updatedAt     DateTime             @updatedAt
+
+  brands        BrandProfile[]
+  ledgerEntries CreditLedger[]
+  jobs          GenerationJob[]
+  transactions  PaymentTransaction[]
+}
+
+model BrandProfile {
+  id             String          @id @default(cuid())
+  userId         String
+  name           String
+  industry       String
+  targetAudience String
+  toneOfVoice    String
+  usp            String?
+  primaryColor   String          @default("#0F172A")
+  secondaryColor String          @default("#0F766E")
+  fontPreset     String          @default("MODERN_SANS")
+  logoUrl        String?
+  productsJson   Json?
+  isActive       Boolean         @default(true)
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+
+  user           User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  jobs           GenerationJob[]
+
+  @@index([userId])
+}
+
+model CreditLedger {
+  id           String     @id @default(cuid())
+  userId       String
+  type         LedgerType
+  amount       Int
+  bucket       String
+  balanceAfter Int
+  referenceId  String?
+  description  String
+  createdAt    DateTime   @default(now())
+
+  user         User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt])
+}
+
+model GenerationJob {
+  id            String       @id @default(cuid())
+  userId        String
+  brandId       String
+  agentType     String
+  creditCost    Int
+  status        JobStatus    @default(PENDING)
+  inputPayload  Json
+  outputPayload Json?
+  errorMessage  String?
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+
+  user          User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  brand         BrandProfile @relation(fields: [brandId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt])
+}
+
+model PaymentTransaction {
+  id              String   @id @default(cuid())
+  userId          String
+  externalOrderId String   @unique
+  itemType        String
+  amountIdr       Int
+  status          String
+  rawWebhook      Json?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, status])
+}
