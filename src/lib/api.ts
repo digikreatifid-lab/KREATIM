@@ -13,6 +13,11 @@ export class HttpError extends Error {
   }
 }
 
+/** Client IP behind the VPS reverse proxy (first X-Forwarded-For hop). */
+export function clientIp(req: Request) {
+  return req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || req.headers.get("x-real-ip") || "unknown";
+}
+
 export function jsonError(status: number, message: string, details?: unknown) {
   return NextResponse.json({ error: message, ...(details ? { details } : {}) }, { status });
 }
