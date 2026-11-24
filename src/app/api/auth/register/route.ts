@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
-import { handleRoute, HttpError, parseJson } from "@/lib/api";
+import { clientIp, handleRoute, HttpError, parseJson } from "@/lib/api";
+import { rateLimit } from "@/lib/rate-limit";
 import { EmailAlreadyRegisteredError, registerWithPassword } from "@/services/userService";
 
 const registerSchema = z.object({
@@ -10,6 +11,9 @@ const registerSchema = z.object({
 });
 
 export const POST = handleRoute(async (req: Request) => {
+  if (!rateLimit(`register:${clientIp(req)}`, 5, 60 * 60_000)) {
+    throw new HttpError(429, "Terlalu banyak pendaftaran dari jaringan ini. Coba lagi nanti.");
+  }
   const input = await parseJson(req, registerSchema);
   try {
     const user = await registerWithPassword(input);

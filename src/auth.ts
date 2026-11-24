@@ -3,6 +3,7 @@ import Credentials from "next-auth/providers/credentials";
 import Google from "next-auth/providers/google";
 import { z } from "zod";
 import { authConfig } from "@/auth.config";
+import { rateLimit } from "@/lib/rate-limit";
 import { findOrCreateOAuthUser, verifyPassword } from "@/services/userService";
 
 const credentialsSchema = z.object({
@@ -20,6 +21,8 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       async authorize(raw) {
         const parsed = credentialsSchema.safeParse(raw);
         if (!parsed.success) return null;
+        // Slow down password guessing: 10 attempts per email per 10 minutes.
+        if (!rateLimit(`login:${parsed.data.email.toLowerCase()}`, 10, 10 * 60_000)) return null;
         const user = await verifyPassword(parsed.data.email, parsed.data.password);
         return user ? { id: user.id, email: user.email, name: user.name } : null;
       },
