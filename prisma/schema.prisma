@@ -39,6 +39,8 @@ model User {
   subCredits    Int                  @default(15)
   topupCredits  Int                  @default(0)
   subExpiresAt  DateTime?
+  /// Top-up credits are valid for 90 days from the latest top-up purchase (PRD §3.4).
+  topupExpiresAt DateTime?
   createdAt     DateTime             @default(now())
   updatedAt     DateTime             @updatedAt
 
