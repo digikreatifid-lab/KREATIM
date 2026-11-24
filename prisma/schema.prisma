@@ -31,18 +31,18 @@ enum JobStatus {
 }
 
 model User {
-  id            String               @id @default(cuid())
-  email         String               @unique
-  name          String?
-  passwordHash  String?
-  planTier      PlanTier             @default(FREE_TRIAL)
-  subCredits    Int                  @default(15)
-  topupCredits  Int                  @default(0)
-  subExpiresAt  DateTime?
+  id             String    @id @default(cuid())
+  email          String    @unique
+  name           String?
+  passwordHash   String?
+  planTier       PlanTier  @default(FREE_TRIAL)
+  subCredits     Int       @default(15)
+  topupCredits   Int       @default(0)
+  subExpiresAt   DateTime?
   /// Top-up credits are valid for 90 days from the latest top-up purchase (PRD §3.4).
   topupExpiresAt DateTime?
-  createdAt     DateTime             @default(now())
-  updatedAt     DateTime             @updatedAt
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
 
   brands        BrandProfile[]
   ledgerEntries CreditLedger[]
@@ -51,24 +51,27 @@ model User {
 }
 
 model BrandProfile {
-  id             String          @id @default(cuid())
-  userId         String
-  name           String
-  industry       String
-  targetAudience String
-  toneOfVoice    String
-  usp            String?
-  primaryColor   String          @default("#0F172A")
-  secondaryColor String          @default("#0F766E")
-  fontPreset     String          @default("MODERN_SANS")
-  logoUrl        String?
-  productsJson   Json?
-  isActive       Boolean         @default(true)
-  createdAt      DateTime        @default(now())
-  updatedAt      DateTime        @updatedAt
+  id              String   @id @default(cuid())
+  userId          String
+  name            String
+  industry        String
+  targetAudience  String
+  toneOfVoice     String
+  usp             String?
+  /// Kata kunci wajib & kata terlarang (PRD §3.1)
+  mustUseKeywords String[] @default([])
+  forbiddenWords  String[] @default([])
+  primaryColor    String   @default("#0F172A")
+  secondaryColor  String   @default("#0F766E")
+  fontPreset      String   @default("MODERN_SANS")
+  logoUrl         String?
+  productsJson    Json?
+  isActive        Boolean  @default(true)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
 
-  user           User            @relation(fields: [userId], references: [id], onDelete: Cascade)
-  jobs           GenerationJob[]
+  user User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  jobs GenerationJob[]
 
   @@index([userId])
 }
@@ -84,26 +87,26 @@ model CreditLedger {
   description  String
   createdAt    DateTime   @default(now())
 
-  user         User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId, createdAt])
 }
 
 model GenerationJob {
-  id            String       @id @default(cuid())
+  id            String    @id @default(cuid())
   userId        String
   brandId       String
   agentType     String
   creditCost    Int
-  status        JobStatus    @default(PENDING)
+  status        JobStatus @default(PENDING)
   inputPayload  Json
   outputPayload Json?
   errorMessage  String?
-  createdAt     DateTime     @default(now())
-  updatedAt     DateTime     @updatedAt
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
 
-  user          User         @relation(fields: [userId], references: [id], onDelete: Cascade)
-  brand         BrandProfile @relation(fields: [brandId], references: [id], onDelete: Cascade)
+  user  User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  brand BrandProfile @relation(fields: [brandId], references: [id], onDelete: Cascade)
 
   @@index([userId, createdAt])
 }
@@ -119,7 +122,7 @@ model PaymentTransaction {
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
 
-  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId, status])
 }

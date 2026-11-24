@@ -10,7 +10,10 @@ export function SidebarNav() {
   return (
     <nav className="flex gap-1 overflow-x-auto md:flex-col">
       {DASHBOARD_NAV.map((item) => {
-        const active = item.href === "/dashboard" ? pathname === item.href : pathname.startsWith(item.href);
+        const active =
+          item.href === "/dashboard"
+            ? pathname === item.href
+            : pathname.startsWith(item.href) || (item.href === "/dashboard/brands" && pathname === "/dashboard/onboarding");
         return (
           <Link
             key={item.href}
