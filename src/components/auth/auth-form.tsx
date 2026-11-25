@@ -50,7 +50,7 @@ export function AuthForm({ mode, googleEnabled }: { mode: "login" | "register"; 
   return (
     <div className="grid gap-6">
       <div className="grid gap-2">
-        <h1 className="text-4xl font-extrabold">{isRegister ? "Buat akun Kreatim" : "Masuk ke Kreatim"}</h1>
+        <h1 className="text-3xl font-extrabold">{isRegister ? "Buat akun Kreatim" : "Masuk ke Kreatim"}</h1>
         <p className="text-muted-foreground">
           {isRegister ? "Dapatkan 15 kredit gratis untuk mencoba semua agent." : "Lanjutkan membuat konten untuk brand kamu."}
         </p>

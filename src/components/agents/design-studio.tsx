@@ -3,13 +3,13 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { Download, Loader2, RefreshCw, Sparkles } from "lucide-react";
+import { Download, Loader2, Palette, RefreshCw, Sparkles } from "lucide-react";
+import { Starfield } from "@/components/cosmos/starfield";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { ClayBuddy } from "@/components/clay/clay";
 import { cn } from "@/lib/utils";
 import { BrandProductPicker, type BrandOption } from "./brand-product-picker";
 
@@ -177,7 +177,7 @@ export function DesignStudio({
             <div className="flex gap-2">
               {(["4:5", "9:16"] as const).map((r) => (
                 <button key={r} type="button" aria-pressed={ratio === r} onClick={() => setRatio(r)}
-                  className={cn("flex-1 rounded-2xl border border-input bg-white px-3 py-2.5 text-sm", ratio === r ? "border-ink bg-lilac/50 font-semibold" : "hover:bg-secondary")}>
+                  className={cn("flex-1 rounded-2xl border border-input bg-white px-3 py-2.5 text-sm", ratio === r ? "border-aurora bg-accent font-semibold text-accent-foreground" : "hover:bg-secondary")}>
                   {r === "4:5" ? "4:5 Feed (1080×1350)" : "9:16 Story (1080×1920)"}
                 </button>
               ))}
@@ -188,7 +188,7 @@ export function DesignStudio({
             <div className="grid grid-cols-2 gap-2">
               {TEMPLATE_OPTIONS.map((t) => (
                 <button key={t.value} type="button" aria-pressed={template === t.value} onClick={() => setTemplate(t.value)}
-                  className={cn("rounded-2xl border border-input bg-white px-3 py-2.5 text-left text-sm", template === t.value ? "border-ink bg-lilac/50 font-semibold" : "hover:bg-secondary")}>
+                  className={cn("rounded-2xl border border-input bg-white px-3 py-2.5 text-left text-sm", template === t.value ? "border-aurora bg-accent font-semibold text-accent-foreground" : "hover:bg-secondary")}>
                   {t.label}
                 </button>
               ))}
@@ -217,7 +217,7 @@ export function DesignStudio({
             <div className="grid grid-cols-4 gap-1.5">
               {LOGO_OPTIONS.map((l) => (
                 <button key={l.value} type="button" aria-pressed={logoPosition === l.value} onClick={() => setLogoPosition(l.value)}
-                  className={cn("rounded-2xl border border-input bg-white px-2 py-2 text-xs", logoPosition === l.value ? "border-ink bg-lilac/50 font-semibold" : "hover:bg-secondary")}>
+                  className={cn("rounded-2xl border border-input bg-white px-2 py-2 text-xs", logoPosition === l.value ? "border-aurora bg-accent font-semibold text-accent-foreground" : "hover:bg-secondary")}>
                   {l.label}
                 </button>
               ))}
@@ -238,13 +238,14 @@ export function DesignStudio({
       </Card>
 
       <div className="grid content-start justify-items-center gap-4">
-        <div className={cn("relative w-full max-w-[440px] overflow-hidden stage rounded-[28px] border shadow-[0_40px_60px_-40px_rgb(36_26_75/0.6)]", aspect)}>
+        <div className={cn("relative w-full max-w-[440px] cosmos overflow-hidden rounded-[22px] shadow-[0_40px_60px_-40px_rgb(13_18_48/0.6)]", aspect)}>
           {preview ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img src={preview} alt="Pratinjau desain" className="size-full object-cover" />
           ) : (
-            <div className="flex size-full flex-col items-center justify-center gap-2 p-6 text-center text-sm text-muted-foreground">
-              <ClayBuddy kind="desainer" size={80} className={busy === "generate" ? "animate-bounce" : "float-slow"} />
+            <div className="flex size-full flex-col items-center justify-center gap-3 p-6 text-center text-sm text-white/70">
+              <Starfield density={0.9} />
+              {busy === "generate" ? <Loader2 className="relative size-7 animate-spin text-comet" /> : <Palette className="relative size-7 text-comet" />}
               {busy === "generate" ? "Membuat latar AI dan menyusun desain..." : "Isi konsep dan headline, desainnya muncul di sini."}
             </div>
           )}

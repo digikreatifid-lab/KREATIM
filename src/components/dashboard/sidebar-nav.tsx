@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Clay } from "@/components/clay/clay";
 import { cn } from "@/lib/utils";
 import { DASHBOARD_NAV } from "./nav";
 
@@ -21,11 +20,11 @@ export function SidebarNav() {
             href={item.href}
             aria-current={active ? "page" : undefined}
             className={cn(
-              "flex items-center gap-3 rounded-full px-3 py-2.5 text-sm font-semibold whitespace-nowrap transition-colors",
-              active ? "bg-ink text-white" : "text-ink/70 hover:bg-secondary hover:text-ink",
+              "flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium whitespace-nowrap transition-colors",
+              active ? "bg-white/12 text-white" : "text-white/60 hover:bg-white/6 hover:text-white",
             )}
           >
-            <Clay color={item.color} size={16} />
+            <item.icon className={cn("size-4", active && "text-comet")} />
             {item.label}
           </Link>
         );

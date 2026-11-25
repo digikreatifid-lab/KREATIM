@@ -93,7 +93,7 @@ export function BrandVisualFields({ value, onChange }: Props) {
               aria-pressed={value.fontPreset === f.value}
               className={cn(
                 "rounded-2xl border border-input bg-white p-3 text-left transition-colors",
-                value.fontPreset === f.value ? "border-ink bg-lilac/50" : "hover:bg-secondary",
+                value.fontPreset === f.value ? "border-aurora bg-accent" : "hover:bg-secondary",
               )}
             >
               <span className="block text-sm font-medium">{f.label}</span>
@@ -109,7 +109,7 @@ export function BrandVisualFields({ value, onChange }: Props) {
 function ProductRow({ product, onChange, onRemove }: { product: Product; onChange: (p: Product) => void; onRemove: () => void }) {
   const benefits = [...product.benefits, "", "", ""].slice(0, 3);
   return (
-    <div className="grid gap-4 rounded-3xl border bg-mist/60 p-4">
+    <div className="grid gap-4 rounded-3xl border bg-secondary/60 p-4">
       <div className="grid gap-4 sm:grid-cols-[1fr_160px]">
         <div className="grid gap-2">
           <Label htmlFor={`pn-${product.id}`}>Nama produk</Label>

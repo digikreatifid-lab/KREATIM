@@ -3,14 +3,13 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { Check, Copy, Loader2, Palette, Sparkles, Star } from "lucide-react";
+import { Check, Copy, Loader2, Palette, PenLine, Sparkles, Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { COPY_FORMATS, COPY_FRAMEWORKS, type CopyVariation } from "@/lib/ai/copy-schema";
-import { ClayBuddy } from "@/components/clay/clay";
 import { cn } from "@/lib/utils";
 import { BrandProductPicker, type BrandOption } from "./brand-product-picker";
 
@@ -89,7 +88,7 @@ export function CopywriterStudio({ brands }: { brands: BrandOption[] }) {
             <div className="grid grid-cols-2 gap-2">
               {COPY_FORMATS.map((f) => (
                 <button key={f.value} type="button" aria-pressed={format === f.value} onClick={() => setFormat(f.value)}
-                  className={cn("rounded-2xl border border-input bg-white px-3 py-2.5 text-left text-sm", format === f.value ? "border-ink bg-lilac/50 font-semibold" : "hover:bg-secondary")}>
+                  className={cn("rounded-2xl border border-input bg-white px-3 py-2.5 text-left text-sm", format === f.value ? "border-aurora bg-accent font-semibold text-accent-foreground" : "hover:bg-secondary")}>
                   {f.label}
                 </button>
               ))}
@@ -119,14 +118,14 @@ export function CopywriterStudio({ brands }: { brands: BrandOption[] }) {
 
       <div className="grid content-start gap-4">
         {!result && !busy && (
-          <div className="stage flex flex-col items-center gap-4 rounded-[32px] p-12 text-center text-sm text-muted-foreground">
-            <ClayBuddy kind="penulis" size={72} className="float-slow" />
+          <div className="flex flex-col items-center gap-4 rounded-[22px] border border-dashed border-input bg-secondary/50 p-12 text-center text-sm text-muted-foreground">
+            <span className="grid size-12 place-items-center rounded-2xl bg-sun/25 text-[#9a6500]"><PenLine className="size-6" /></span>
             Tulis brief di kiri, tiga variasi copy muncul di sini.
           </div>
         )}
         {busy && (
           <div className="grid gap-4">
-            {[0, 1, 2].map((i) => <div key={i} className="h-40 animate-pulse rounded-[28px] bg-white" />)}
+            {[0, 1, 2].map((i) => <div key={i} className="h-40 animate-pulse rounded-[22px] bg-secondary" />)}
           </div>
         )}
         {result && !busy && (
