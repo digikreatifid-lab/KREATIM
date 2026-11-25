@@ -16,7 +16,7 @@ export function BrandPreview({ brand }: { brand: Pick<BrandFormState, "name" | "
   return (
     <div className="grid gap-2">
       <div
-        className="relative flex aspect-[4/5] w-full flex-col justify-between overflow-hidden rounded-xl p-5 text-white shadow-sm"
+        className="relative flex aspect-[4/5] w-full flex-col justify-between overflow-hidden rounded-[24px] p-5 text-white shadow-[0_30px_50px_-30px_rgb(36_26_75/0.6)]"
         style={{ background: `linear-gradient(160deg, ${brand.primaryColor} 0%, ${brand.primaryColor} 55%, ${brand.secondaryColor} 100%)`, fontFamily: PREVIEW_FONT[brand.fontPreset] }}
       >
         <div className="flex items-center gap-2">

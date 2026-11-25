@@ -2,27 +2,38 @@
 
 @custom-variant dark (&:is(.dark *));
 
+/*
+ * Kreatim "Kosmos" tokens: crisp white workspace, deep night-navy panels
+ * with drifting stars, aurora violet for actions, comet teal and sun gold as highlights.
+ */
 :root {
-  --radius: 0.625rem;
+  --radius: 0.875rem;
+  --night: #070a1f;
+  --night-2: #10163a;
+  --ink: #0d1230;
+  --aurora: #6e56ff;
+  --comet: #34d3c1;
+  --sun: #ffc24b;
+
   --background: #ffffff;
-  --foreground: #0f172a;
+  --foreground: var(--ink);
   --card: #ffffff;
-  --card-foreground: #0f172a;
+  --card-foreground: var(--ink);
   --popover: #ffffff;
-  --popover-foreground: #0f172a;
-  --primary: #0f172a;
-  --primary-foreground: #f8fafc;
-  --secondary: #f1f5f9;
-  --secondary-foreground: #0f172a;
-  --muted: #f1f5f9;
-  --muted-foreground: #64748b;
-  --accent: #ccfbf1;
-  --accent-foreground: #0f766e;
-  --destructive: #dc2626;
-  --border: #e2e8f0;
-  --input: #e2e8f0;
-  --ring: #0f766e;
-  --brand: #0f766e;
+  --popover-foreground: var(--ink);
+  --primary: var(--ink);
+  --primary-foreground: #ffffff;
+  --secondary: #f3f4fa;
+  --secondary-foreground: var(--ink);
+  --muted: #f3f4fa;
+  --muted-foreground: #5b6385;
+  --accent: #efecff;
+  --accent-foreground: #4b33e0;
+  --destructive: #e5484d;
+  --border: #e4e6f0;
+  --input: #dcdfeb;
+  --ring: var(--aurora);
+  --brand: var(--aurora);
 }
 
 @theme inline {
@@ -45,12 +56,17 @@
   --color-input: var(--input);
   --color-ring: var(--ring);
   --color-brand: var(--brand);
-  --radius-sm: calc(var(--radius) - 4px);
-  --radius-md: calc(var(--radius) - 2px);
+  --color-night: var(--night);
+  --color-night-2: var(--night-2);
+  --color-ink: var(--ink);
+  --color-aurora: var(--aurora);
+  --color-comet: var(--comet);
+  --color-sun: var(--sun);
+  --radius-sm: calc(var(--radius) - 6px);
+  --radius-md: calc(var(--radius) - 4px);
   --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) + 4px);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --radius-xl: calc(var(--radius) + 6px);
+  --font-sans: var(--font-jakarta);
 }
 
 @layer base {
@@ -59,5 +75,55 @@
   }
   body {
     @apply bg-background text-foreground antialiased;
+  }
+  h1,
+  h2,
+  h3 {
+    letter-spacing: -0.035em;
+    text-wrap: balance;
+  }
+  ::selection {
+    background: color-mix(in oklab, var(--aurora) 30%, white);
+  }
+}
+
+@layer components {
+  /* Deep-space surface: night navy with two soft aurora glows. Pair with <Starfield />. */
+  .cosmos {
+    background-color: var(--night);
+    background-image:
+      radial-gradient(60% 55% at 78% 10%, color-mix(in oklab, var(--aurora) 38%, transparent), transparent 70%),
+      radial-gradient(50% 50% at 8% 100%, color-mix(in oklab, var(--comet) 22%, transparent), transparent 70%),
+      linear-gradient(180deg, var(--night-2), var(--night));
+    color: white;
+  }
+  .glass {
+    background: rgb(255 255 255 / 0.07);
+    border: 1px solid rgb(255 255 255 / 0.12);
+    backdrop-filter: blur(14px);
+  }
+  .text-aurora-gradient {
+    background: linear-gradient(100deg, #b9a8ff, var(--comet) 55%, #ffe3a3);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+}
+
+@keyframes rise-in {
+  from { opacity: 0; transform: translateY(28px) scale(0.97); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes drift {
+  0%, 100% { translate: 0 0; }
+  50% { translate: 0 -8px; }
+}
+.rise-in { animation: rise-in 0.9s cubic-bezier(0.2, 0.8, 0.2, 1) both; }
+.drift { animation: drift 7s ease-in-out infinite; }
+
+@media (prefers-reduced-motion: reduce) {
+  .rise-in,
+  .drift {
+    animation: none;
   }
 }

@@ -35,7 +35,7 @@ export default async function DesignPage({ searchParams }: { searchParams: Promi
   return (
     <div className="mx-auto grid max-w-6xl gap-6">
       <div>
-        <h1 className="text-2xl font-semibold tracking-tight">Agent Desain Grafis</h1>
+        <h1 className="text-3xl font-extrabold tracking-tight sm:text-4xl">Agent Desain Grafis</h1>
         <p className="text-muted-foreground">Latar visual dari AI, tipografi dan logo presisi dari Brand Brain. Edit teks sepuasnya tanpa kredit.</p>
       </div>
       {brands.length === 0 ? (
@@ -61,7 +61,7 @@ export default async function DesignPage({ searchParams }: { searchParams: Promi
             {recent.map((job) => {
               const s = job.outputPayload as unknown as DesignState | null;
               return (
-                <Link key={job.id} href={`/dashboard/design?job=${job.id}`} className="overflow-hidden rounded-lg border bg-secondary/50 hover:ring-2 hover:ring-brand">
+                <Link key={job.id} href={`/dashboard/design?job=${job.id}`} className="overflow-hidden rounded-2xl border bg-secondary/50 hover:ring-2 hover:ring-brand">
                   {s?.imageUrl ? (
                     // eslint-disable-next-line @next/next/no-img-element
                     <img src={s.imageUrl} alt={s.content?.headline ?? "Desain"} className={s.ratio === "9:16" ? "aspect-[9/16] w-full object-cover" : "aspect-[4/5] w-full object-cover"} />

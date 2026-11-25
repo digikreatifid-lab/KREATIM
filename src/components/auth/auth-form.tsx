@@ -5,7 +5,6 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { signIn } from "next-auth/react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
@@ -49,14 +48,14 @@ export function AuthForm({ mode, googleEnabled }: { mode: "login" | "register"; 
   }
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="text-xl">{isRegister ? "Buat akun Kreatim" : "Masuk ke Kreatim"}</CardTitle>
-        <CardDescription>
+    <div className="grid gap-6">
+      <div className="grid gap-2">
+        <h1 className="text-3xl font-extrabold">{isRegister ? "Buat akun Kreatim" : "Masuk ke Kreatim"}</h1>
+        <p className="text-muted-foreground">
           {isRegister ? "Dapatkan 15 kredit gratis untuk mencoba semua agent." : "Lanjutkan membuat konten untuk brand kamu."}
-        </CardDescription>
-      </CardHeader>
-      <CardContent className="grid gap-4">
+        </p>
+      </div>
+      <div className="grid gap-4">
         {googleEnabled && (
           <>
             <Button variant="outline" type="button" onClick={() => signIn("google", { redirectTo: "/dashboard" })}>
@@ -90,8 +89,8 @@ export function AuthForm({ mode, googleEnabled }: { mode: "login" | "register"; 
             />
           </div>
           {error && <p className="text-sm text-destructive" role="alert">{error}</p>}
-          <Button type="submit" disabled={pending}>
-            {pending ? "Memproses..." : isRegister ? "Daftar & Dapatkan 15 Kredit" : "Masuk"}
+          <Button type="submit" variant="brand" size="lg" disabled={pending}>
+            {pending ? "Memproses..." : isRegister ? "Daftar dan ambil 15 kredit" : "Masuk"}
           </Button>
         </form>
         <p className="text-center text-sm text-muted-foreground">
@@ -100,7 +99,7 @@ export function AuthForm({ mode, googleEnabled }: { mode: "login" | "register"; 
             {isRegister ? "Masuk" : "Daftar gratis"}
           </Link>
         </p>
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 }

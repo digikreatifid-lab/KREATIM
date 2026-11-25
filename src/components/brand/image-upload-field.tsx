@@ -37,7 +37,7 @@ export function ImageUploadField({
   return (
     <div className="grid gap-2">
       <div className="flex items-center gap-3">
-        <div className="flex size-16 shrink-0 items-center justify-center overflow-hidden rounded-lg border bg-secondary/50">
+        <div className="flex size-16 shrink-0 items-center justify-center overflow-hidden rounded-2xl border bg-secondary/50">
           {value ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img src={value} alt={label} className="size-full object-contain" />
